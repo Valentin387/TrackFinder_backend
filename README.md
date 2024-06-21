@@ -39,6 +39,10 @@ TrackFinder/
 Ensure you have a `.env` file with the following content:
 
 ```
+MONGO_DB_USER= ...
+MONGO_DB_PASSWORD= ...
+
+So the software can get those and use them here:
 MONGO_DB_URL=mongodb+srv://<username>:<password>@cluster0.mongodb.net/<dbname>?retryWrites=true&w=majority
 ```
 

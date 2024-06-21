@@ -42,27 +42,36 @@ def get_collection(collection_name):
 # Endpoint 1: Search for songs (full-text search example)
 @general_use_router.post("/search_songs",  tags=["general_use"])
 async def search_songs(search_criteria: Song_metadata):
-    all_results = []
-    for collection_name in db.list_collection_names():
-        collection = db[collection_name]
-        query = {}
-        for field, value in search_criteria.model_dump().items():
-            if value:
-                query[field] = {"$regex": value, "$options": "i"}  # Case-insensitive regex search
-        results = collection.find(query)
-        all_results.extend(results)
-    return all_results
+    try:
+        all_results = []
+        for collection_name in db.list_collection_names():
+            collection = db[collection_name]
+            query = {}
+            for field, value in search_criteria.model_dump().items():
+                if value:
+                    query[field] = {"$regex": value, "$options": "i"}  # Case-insensitive regex search
+            results = collection.find(query)
+            all_results.extend(results)
+        return all_results
+    except Exception as e:
+        return {"message": f"An error occurred: {str(e)}"}
 
 # Endpoint 2: Get all collections
 @general_use_router.get("/collections",  tags=["general_use"])
 async def get_collections():
-    collections = db.list_collection_names()
-    return collections
+    try:
+        collections = db.list_collection_names()
+        return collections
+    except Exception as e:
+        return {"message": f"An error occurred: {str(e)}"}
 
 # Endpoint 3: Add a song document
 @general_use_router.post("/add_song",  tags=["general_use"])
 async def add_song(song: Song_metadata, collection_name: str):
-    collection = get_collection(collection_name)
-    collection.insert_one(song.model_dump())
-    return {"message": "Song added successfully!"}
+    try:
+        collection = get_collection(collection_name)
+        collection.insert_one(song.model_dump())
+        return {"message": "Song added successfully!"}
+    except Exception as e:
+        return {"message": f"An error occurred: {str(e)}"}
 

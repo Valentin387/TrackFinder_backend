@@ -1,4 +1,4 @@
-Sure! Here's a README file for your current project:
+
 
 # TrackFinder Backend
 ![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi)

@@ -3,9 +3,9 @@ Sure! Here's a README file for your current project:
 # TrackFinder Backend
 ![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi)
 ![Python](https://img.shields.io/badge/python-3.8%2B-blue.svg?style=for-the-badge&logo=python)
-![GitHub last commit](https://img.shields.io/github/last-commit/YourUsername/TrackFinder_backend?style=for-the-badge)
-![Issues](https://img.shields.io/github/issues/YourUsername/TrackFinder_backend?style=for-the-badge)
-![Pull Requests](https://img.shields.io/github/issues-pr/YourUsername/TrackFinder_backend?style=for-the-badge)
+![GitHub last commit](https://img.shields.io/github/last-commit/Valentin387/TrackFinder_backend?style=for-the-badge)
+![Issues](https://img.shields.io/github/issues/Valentin387/TrackFinder_backend?style=for-the-badge)
+![Pull Requests](https://img.shields.io/github/issues-pr/Valentin387/TrackFinder_backend?style=for-the-badge)
 
 Backend for managing a music database with MongoDB Atlas, using FastAPI.
 

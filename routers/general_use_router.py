@@ -57,15 +57,12 @@ async def search_songs(search_criteria: Song_metadata):
                 if value:
                     query[field] = {"$regex": value, "$options": "i"}  # Case-insensitive regex search
             """
-            results = collection.find({"title": { "$regex": "20" }}, proyection_boolean_dict)
-            if results:
-                print(collection.name)
-            for result in results:
-                print(result)
-            # Convert results (which include ObjectId) to a list of dictionaries
-            results_list = [dict(result) for result in results]  # This line is new
+            results = collection.find({"title": { "$regex": "20", "$options": "i" }}, proyection_boolean_dict)
 
-            all_results.extend(results_list)
+            # Convert results to a list of dictionaries
+            results_list = [dict(result) for result in results]  
+            if len(results_list)>0:
+                all_results.append({ collection_name :results_list})
         return all_results
     except Exception as e:
         return {"message": f"An error occurred: {str(e)}"}

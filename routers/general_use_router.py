@@ -38,6 +38,11 @@ def get_collection(collection_name):
         db.create_collection(collection_name)
     return db[collection_name]
 
+proyection_boolean_dict = { "_id": 0, 
+                            "bitrate": 0,
+                            "commentaries": 0,
+                            "track_number": 0,
+                            }
 
 # Endpoint 1: Search for songs (full-text search example)
 @general_use_router.post("/search_songs",  tags=["general_use"])
@@ -46,12 +51,21 @@ async def search_songs(search_criteria: Song_metadata):
         all_results = []
         for collection_name in db.list_collection_names():
             collection = db[collection_name]
+            """
             query = {}
             for field, value in search_criteria.model_dump().items():
                 if value:
                     query[field] = {"$regex": value, "$options": "i"}  # Case-insensitive regex search
-            results = collection.find(query)
-            all_results.extend(results)
+            """
+            results = collection.find({"title": { "$regex": "20" }}, proyection_boolean_dict)
+            if results:
+                print(collection.name)
+            for result in results:
+                print(result)
+            # Convert results (which include ObjectId) to a list of dictionaries
+            results_list = [dict(result) for result in results]  # This line is new
+
+            all_results.extend(results_list)
         return all_results
     except Exception as e:
         return {"message": f"An error occurred: {str(e)}"}

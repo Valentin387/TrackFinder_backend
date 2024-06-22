@@ -32,6 +32,25 @@ def connect_to_mongo(connection_string):
 client = connect_to_mongo(CONNECTION_STRING)
 db = client.valentin_music_db
 
+# here's a function that receives the Song_metadata object and returns a JSON format without the default placeholder fields (0, "string"):
+def clean_song_metadata(song_data: Song_metadata) -> dict:
+  """
+  This function cleans a Song_metadata object by removing fields with default placeholder values.
+
+  Args:
+      song_data: The Song_metadata object to be cleaned.
+
+  Returns:
+      A dictionary containing only non-default fields from the song data.
+  """
+  cleaned_data = {}
+  for field, value in song_data.model_dump(exclude_unset=True).items():
+    # Exclude fields with default values (0 and "string")
+    if value not in (0, "string"):
+      cleaned_data[field] = value
+  return cleaned_data
+
+
 # Function to get collection (handles creation if needed)
 def get_collection(collection_name):
     if collection_name not in db.list_collection_names():
@@ -46,8 +65,10 @@ proyection_boolean_dict = { "_id": 0,
 
 # Endpoint 1: Search for songs (full-text search example)
 @general_use_router.post("/search_songs",  tags=["general_use"])
-async def search_songs(search_criteria: Song_metadata):
+async def search_songs(input: Song_metadata):
     try:
+        search_criteria = clean_song_metadata(input)
+        #------
         all_results = []
         for collection_name in db.list_collection_names():
             collection = db[collection_name]
@@ -57,7 +78,7 @@ async def search_songs(search_criteria: Song_metadata):
                 if value:
                     query[field] = {"$regex": value, "$options": "i"}  # Case-insensitive regex search
             """
-            results = collection.find({"title": { "$regex": "20", "$options": "i" }}, proyection_boolean_dict)
+            results = collection.find({"title": { "$regex": "wa", "$options": "i" }}, proyection_boolean_dict)
 
             # Convert results to a list of dictionaries
             results_list = [dict(result) for result in results]  

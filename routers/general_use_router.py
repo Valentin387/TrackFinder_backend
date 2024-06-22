@@ -72,18 +72,24 @@ async def search_songs(input: Song_metadata):
         all_results = []
         for collection_name in db.list_collection_names():
             collection = db[collection_name]
+            results_in_this_collection = []
             
             query = {}
+            # Iterate over the search criteria and build the query for every field independently of the others
             for field, value in search_criteria.items():
+                query.clear()
                 query[field] = {"$regex": value, "$options": "i"}  # Case-insensitive regex search
                 results = collection.find(query, proyection_boolean_dict)
+                field_results = [dict(result) for result in results]
+                if len(field_results)>0:
+                    results_in_this_collection.extend(field_results)
             #Hardcoding testing:
             #results = collection.find({"title": { "$regex": "wa", "$options": "i" }}, proyection_boolean_dict)
 
-            # Convert results to a list of dictionaries
-            results_list = [dict(result) for result in results]  
-            if len(results_list)>0:
-                all_results.append({ collection_name :results_list})
+            # append the results of this collection to the all_results list 
+            if len(results_in_this_collection)>0:
+                all_results.append({ collection_name :results_in_this_collection})
+        # return all the results
         return all_results
     except Exception as e:
         return {"message": f"An error occurred: {str(e)}"}

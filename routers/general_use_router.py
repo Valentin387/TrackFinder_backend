@@ -32,37 +32,78 @@ def connect_to_mongo(connection_string):
 client = connect_to_mongo(CONNECTION_STRING)
 db = client.valentin_music_db
 
+# here's a function that receives the Song_metadata object and returns a JSON format without the default placeholder fields (0, "string"):
+def clean_song_metadata(song_data: Song_metadata) -> dict:
+  """
+  This function cleans a Song_metadata object by removing fields with default placeholder values.
+
+  Args:
+      song_data: The Song_metadata object to be cleaned.
+
+  Returns:
+      A dictionary containing only non-default fields from the song data.
+  """
+  cleaned_data = {}
+  for field, value in song_data.model_dump(exclude_unset=True).items():
+    # Exclude fields with default values (0 and "string")
+    if value not in (0, "string", ""):
+      cleaned_data[field] = value
+  return cleaned_data
+
+
 # Function to get collection (handles creation if needed)
 def get_collection(collection_name):
     if collection_name not in db.list_collection_names():
         db.create_collection(collection_name)
     return db[collection_name]
 
+proyection_boolean_dict = { "_id": 0, 
+                            "bitrate": 0,
+                            "commentaries": 0,
+                            "track_number": 0,
+                            }
 
 # Endpoint 1: Search for songs (full-text search example)
 @general_use_router.post("/search_songs",  tags=["general_use"])
-async def search_songs(search_criteria: Song_metadata):
-    all_results = []
-    for collection_name in db.list_collection_names():
-        collection = db[collection_name]
-        query = {}
-        for field, value in search_criteria.model_dump().items():
-            if value:
+async def search_songs(input: Song_metadata):
+    try:
+        search_criteria = clean_song_metadata(input)
+        #------
+        all_results = []
+        for collection_name in db.list_collection_names():
+            collection = db[collection_name]
+            
+            query = {}
+            for field, value in search_criteria.items():
                 query[field] = {"$regex": value, "$options": "i"}  # Case-insensitive regex search
-        results = collection.find(query)
-        all_results.extend(results)
-    return all_results
+                results = collection.find(query, proyection_boolean_dict)
+            #Hardcoding testing:
+            #results = collection.find({"title": { "$regex": "wa", "$options": "i" }}, proyection_boolean_dict)
+
+            # Convert results to a list of dictionaries
+            results_list = [dict(result) for result in results]  
+            if len(results_list)>0:
+                all_results.append({ collection_name :results_list})
+        return all_results
+    except Exception as e:
+        return {"message": f"An error occurred: {str(e)}"}
 
 # Endpoint 2: Get all collections
 @general_use_router.get("/collections",  tags=["general_use"])
 async def get_collections():
-    collections = db.list_collection_names()
-    return collections
+    try:
+        collections = db.list_collection_names()
+        return collections
+    except Exception as e:
+        return {"message": f"An error occurred: {str(e)}"}
 
 # Endpoint 3: Add a song document
 @general_use_router.post("/add_song",  tags=["general_use"])
 async def add_song(song: Song_metadata, collection_name: str):
-    collection = get_collection(collection_name)
-    collection.insert_one(song.model_dump())
-    return {"message": "Song added successfully!"}
+    try:
+        collection = get_collection(collection_name)
+        collection.insert_one(song.model_dump())
+        return {"message": "Song added successfully!"}
+    except Exception as e:
+        return {"message": f"An error occurred: {str(e)}"}
 

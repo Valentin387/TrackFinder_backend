@@ -46,7 +46,7 @@ def clean_song_metadata(song_data: Song_metadata) -> dict:
   cleaned_data = {}
   for field, value in song_data.model_dump(exclude_unset=True).items():
     # Exclude fields with default values (0 and "string")
-    if value not in (0, "string"):
+    if value not in (0, "string", ""):
       cleaned_data[field] = value
   return cleaned_data
 
@@ -68,7 +68,6 @@ proyection_boolean_dict = { "_id": 0,
 async def search_songs(input: Song_metadata):
     try:
         search_criteria = clean_song_metadata(input)
-        print(search_criteria)
         #------
         all_results = []
         for collection_name in db.list_collection_names():

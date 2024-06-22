@@ -68,17 +68,18 @@ proyection_boolean_dict = { "_id": 0,
 async def search_songs(input: Song_metadata):
     try:
         search_criteria = clean_song_metadata(input)
+        print(search_criteria)
         #------
         all_results = []
         for collection_name in db.list_collection_names():
             collection = db[collection_name]
-            """
+            
             query = {}
-            for field, value in search_criteria.model_dump().items():
-                if value:
-                    query[field] = {"$regex": value, "$options": "i"}  # Case-insensitive regex search
-            """
-            results = collection.find({"title": { "$regex": "wa", "$options": "i" }}, proyection_boolean_dict)
+            for field, value in search_criteria.items():
+                query[field] = {"$regex": value, "$options": "i"}  # Case-insensitive regex search
+                results = collection.find(query, proyection_boolean_dict)
+            #Hardcoding testing:
+            #results = collection.find({"title": { "$regex": "wa", "$options": "i" }}, proyection_boolean_dict)
 
             # Convert results to a list of dictionaries
             results_list = [dict(result) for result in results]  

@@ -9,7 +9,7 @@ app = FastAPI()
 # Configure CORS settings
 origins = [
     "http://localhost",
-    "http://localhost:4200"  # Add the URL of your Angular frontend
+    "https://track-finder-frontend.vercel.app"  # Add the URL of your Angular frontend
 ]
 
 app.add_middleware(

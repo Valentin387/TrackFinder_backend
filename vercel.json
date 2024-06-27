@@ -5,7 +5,7 @@
             "use": "@vercel/python"
         }
     ],
-    "routes": [
+    "routes": [ 
         {
             "src": "/(.*)",
             "dest": "routers/general_use_router.py"

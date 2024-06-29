@@ -45,13 +45,13 @@ def upload_to_mongo(db, data):
         
 
 def main():
-    folder_path = "C:/Users/valentin/Documents/TrackFinder/music_folder"
+    folder_path = "C:/Users/valentin/Desktop/WORKZONE/Temp"
     client = connect_to_mongo(CONNECTION_STRING)
     db = client.valentin_music_db
     data = read_json_files(folder_path)
     #print("\n\n DATA: \n\n", data)
     #print("\n\n")
-    #upload_to_mongo(db, data)
+    upload_to_mongo(db, data)
     print("Data uploaded successfully.")
 
 if __name__ == "__main__":
